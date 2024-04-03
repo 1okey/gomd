@@ -6,7 +6,7 @@ import (
 
 const LINE_RETURN = "\n"
 
-type Serializable interface {
+type Serializer interface {
 	ToString() string
 }
 
@@ -29,8 +29,8 @@ const (
 )
 
 type Text struct {
-	Content  string
-	Style TextStyle
+	Content string
+	Style   TextStyle
 }
 
 func (p Text) ToString() string {
@@ -67,10 +67,10 @@ func (p Paragraph) ToString() string {
 }
 
 type Markdown struct {
-	elements []Serializable
+	elements []Serializer
 }
 
-func (d *Markdown) Add(elements ...Serializable) *Markdown {
+func (d *Markdown) Add(elements ...Serializer) *Markdown {
 	d.elements = append(d.elements, elements...)
 	return d
 }
@@ -78,6 +78,10 @@ func (d *Markdown) Add(elements ...Serializable) *Markdown {
 func (d *Markdown) Flush() *Markdown {
 	clear(d.elements)
 	return d
+}
+
+func (d *Markdown) GetElements() []Serializer {
+	return d.elements
 }
 
 func (d *Markdown) Print() string {
