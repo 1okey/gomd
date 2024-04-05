@@ -1,22 +1,22 @@
 package gomd
 
 import (
+	"log"
 	"strings"
 )
 
 const LINE_RETURN = "\n"
 
+const (
+	TAB           = '\u0009'
+	SPACE         = '\u0020'
+	LINE_FEED     = '\u000A'
+	CARRIAGE_FEED = '\u000A'
+)
+
 type Serializer interface {
 	ToString() string
-}
-
-type Heading struct {
-	Text Paragraph
-	Size uint8
-}
-
-func (h Heading) ToString() string {
-	return strings.Repeat("#", int(h.Size)) + " " + h.Text.ToString()
+	ToUnicode() []rune
 }
 
 type TextStyle string
@@ -33,23 +33,28 @@ type Text struct {
 	Style   TextStyle
 }
 
-func (p Text) ToString() string {
-	switch p.Style {
+func (t Text) ToString() string {
+	switch t.Style {
 	default:
 	case Normal:
-		return p.Content
+		return t.Content
 
 	case Code:
-		return " `" + p.Content + "` "
+		return " `" + t.Content + "` "
 
 	case Bold:
-		return " __" + p.Content + "__ "
+		return " __" + t.Content + "__ "
 
 	case Italic:
-		return " *" + p.Content + "* "
+		return " *" + t.Content + "* "
 	}
 
 	return ""
+}
+
+func (t Text) ToUnicode() []rune {
+	log.Fatal("Not implemented")
+	return []rune{}
 }
 
 type Paragraph struct {
@@ -63,7 +68,12 @@ func (p Paragraph) ToString() string {
 		elements = append(elements, el.ToString())
 	}
 
-	return strings.Join(elements, "") + LINE_RETURN
+	return strings.Join(elements, "") + string(LINE_FEED)
+}
+
+func (p Paragraph) ToUnicode() []rune {
+	log.Fatal("Not implemented")
+	return []rune{}
 }
 
 type Markdown struct {
